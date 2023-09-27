@@ -2,21 +2,8 @@ library(copent)
 library(mnormt)
 library(maotai)
 library(energy)
+library(Ball)
 library(copula)
-
-# copula entropy based test
-tst.ce<-function(s0,s1,n = 8){
-  n0 = dim(s0)[1]
-  n1 = dim(s1)[1]
-  x = rbind(s0,s1)
-  result = 0
-  for(i in 1:n){
-    y1 = c(rep(1,n0),rep(2,n1)) + runif(n0+n1, max = 0.0000001)
-    y0 = c(rep(1,n0+n1)) + runif(n0+n1,max = 0.0000001)
-    result = result + copent(cbind(x,y1)) - copent(cbind(x,y0))
-  }
-  result/n
-}
 
 # mutual information based test
 tst.mi<-function(s0,s1,n = 8){
@@ -48,7 +35,7 @@ n = 500 # sample size
 sample0 = rmnorm(n,m0,v0)
 # data = matrix(0,n*11,2)
 # data[1:n,] = sample0
-stat1 = kstat1 = stat2 = estat1 = rep(0,10)
+stat1 = kstat1 = stat2 = estat1 = ball1 = rep(0,10)
 for(i in 1:10){
   # simulation 1
   # m1 = m0 + i - 1
@@ -65,19 +52,20 @@ for(i in 1:10){
 
   # data[1:n+i*n,] = sample1
   
-  stat1[i] = tst.ce(sample0,sample1)
+  stat1[i] = tst(sample0,sample1)
   stat2[i] = tst.mi(sample0,sample1)
   kstat1[i] = tst.kernel(sample0,sample1)
   estat1[i] = eqdist.e( rbind(sample0,sample1), c(n,n) ) # energy statistics based test
+  ball1[i] = bd.test(sample0,sample1)$statistic # Ball divergence based test
 }#i
 
 x11()
-par(mfrow = c(2,2))
+par(mfrow = c(3,2))
 plot(stat1, ylab = "estimated statistic", main = "CE");lines(stat1)
 plot(stat2, ylab = "estimated statistic", main = "MI");lines(stat2)
 plot(kstat1, ylab = "estimated statistic", main = "Kernel");lines(kstat1)
 plot(estat1, ylab = "estimated statistic", main = "Energy");lines(estat1)
-
+plot(ball1, ylab = "estimated statistic", main = "Ball");lines(ball1)
 
 # x11()
 # col1 = rep(1:11,each = n)
