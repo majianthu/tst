@@ -4,6 +4,7 @@ library(maotai)
 library(energy)
 library(Ball)
 library(copula)
+library(hypoRF)
 
 # mutual information based test
 tst.mi<-function(s0,s1,n = 8){
@@ -35,7 +36,7 @@ n = 500 # sample size
 sample0 = rmnorm(n,m0,v0)
 # data = matrix(0,n*11,2)
 # data[1:n,] = sample0
-stat1 = kstat1 = stat2 = estat1 = ball1 = rep(0,10)
+stat1 = kstat1 = stat2 = estat1 = ball1 = rf1 = rep(0,10)
 for(i in 1:10){
   # simulation 1
   # m1 = m0 + i - 1
@@ -57,15 +58,17 @@ for(i in 1:10){
   kstat1[i] = tst.kernel(sample0,sample1)
   estat1[i] = eqdist.e( rbind(sample0,sample1), c(n,n) ) # energy statistics based test
   ball1[i] = bd.test(sample0,sample1)$statistic # Ball divergence based test
+  rf1[i] = hypoRF(as.data.frame(sample0),as.data.frame(sample1))$obs # random forest based test
 }#i
 
 x11()
 par(mfrow = c(3,2))
-plot(stat1, ylab = "estimated statistic", main = "CE");lines(stat1)
-plot(stat2, ylab = "estimated statistic", main = "MI");lines(stat2)
-plot(kstat1, ylab = "estimated statistic", main = "Kernel");lines(kstat1)
-plot(estat1, ylab = "estimated statistic", main = "Energy");lines(estat1)
-plot(ball1, ylab = "estimated statistic", main = "Ball");lines(ball1)
+plot(stat1, ylab = "statistic", main = "CE");lines(stat1)
+plot(stat2, ylab = "statistic", main = "MI");lines(stat2)
+plot(kstat1, ylab = "statistic", main = "Kernel");lines(kstat1)
+plot(estat1, ylab = "statistic", main = "Energy");lines(estat1)
+plot(ball1, ylab = "statistic", main = "Ball");lines(ball1)
+plot(rf1, ylab = "statistic", main = "RF");lines(rf1)
 
 # x11()
 # col1 = rep(1:11,each = n)
