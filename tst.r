@@ -61,9 +61,9 @@ for(i in 1:10){
   ball1[i] = bd.test(sample0,sample1)$statistic # Ball divergence based test
   rf1[i] = hypoRF(as.data.frame(sample0),as.data.frame(sample1))$obs
   
-  Dx = as.matrix(dist((sample0), diag = TRUE, upper = TRUE))
-  Dy = as.matrix(dist((sample1), diag = TRUE, upper = TRUE))
-  hhg = hhg.test(Dx,Dy, nr.perm = 1000)
+  Dx = as.matrix(dist((rbind(sample0,sample1)), diag = TRUE, upper = TRUE))
+  y = c(rep(0,n),rep(1,n))
+  hhg = hhg.test.2.sample(Dx,y, nr.perm = 1000)
   hhg1[i] = hhg$sum.chisq; hhg2[i] = hhg$sum.lr; hhg3[i] = hhg$max.chisq; hhg4[i] = hhg$max.lr
 }#i
 
