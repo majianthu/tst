@@ -5,6 +5,7 @@ library(energy)
 library(Ball)
 library(copula)
 library(hypoRF)
+library(HHG)
 
 # mutual information based test
 tst.mi<-function(s0,s1,n = 8){
@@ -29,28 +30,28 @@ tst.kernel<-function(s0,s1){
 }
 
 m0 = c(0,0)
-# rho = 0.5 # simulation 1
-rho = 0.0 # simulation 2,3
+rho = 0.5 # simulation 1
+# rho = 0.0 # simulation 2,3
 v0 = matrix(c(1,rho,rho,1), nrow = 2)
-n = 500 # sample size
+n = 300 # sample size
 sample0 = rmnorm(n,m0,v0)
 # data = matrix(0,n*11,2)
 # data[1:n,] = sample0
-stat1 = kstat1 = stat2 = estat1 = ball1 = rf1 = rep(0,10)
+stat1 = kstat1 = stat2 = estat1 = ball1 = rf1 = hhg1 = hhg2 = hhg3 = hhg4 = rep(0,10)
 for(i in 1:10){
   # simulation 1
-  # m1 = m0 + i - 1
-  # sample1 = rmnorm(n,m1,v0)
-
+  m1 = m0 + i - 1
+  sample1 = rmnorm(n,m1,v0)
+  
   # simulation 2
   # rho1 = (i-1) * 0.1
   # v1 = matrix(c(1,rho1,rho1,1),nrow = 2)
   # sample1 = rmnorm(n,m0,v1)
   
   # simulation 3
-  mv.cop <- mvdc(normalCopula((i-1)*0.1), c("norm", "exp"), list(list(mean = 0, sd =2), list(rate = 0.5)))
-  sample1 <- rMvdc(n, mv.cop)
-
+  # mv.cop <- mvdc(normalCopula((i-1)*0.1), c("norm", "exp"), list(list(mean = 0, sd =2), list(rate = 0.5)))
+  # sample1 <- rMvdc(n, mv.cop)
+  
   # data[1:n+i*n,] = sample1
   
   stat1[i] = tst(sample0,sample1)
@@ -58,17 +59,26 @@ for(i in 1:10){
   kstat1[i] = tst.kernel(sample0,sample1)
   estat1[i] = eqdist.e( rbind(sample0,sample1), c(n,n) ) # energy statistics based test
   ball1[i] = bd.test(sample0,sample1)$statistic # Ball divergence based test
-  rf1[i] = hypoRF(as.data.frame(sample0),as.data.frame(sample1))$obs # random forest based test
+  rf1[i] = hypoRF(as.data.frame(sample0),as.data.frame(sample1))$obs
+  
+  Dx = as.matrix(dist((sample0), diag = TRUE, upper = TRUE))
+  Dy = as.matrix(dist((sample1), diag = TRUE, upper = TRUE))
+  hhg = hhg.test(Dx,Dy, nr.perm = 1000)
+  hhg1[i] = hhg$sum.chisq; hhg2[i] = hhg$sum.lr; hhg3[i] = hhg$max.chisq; hhg4[i] = hhg$max.lr
 }#i
 
-x11()
-par(mfrow = c(3,2))
+x11(width = 12, height = 9)
+par(mfrow = c(3,4))
 plot(stat1, ylab = "statistic", main = "CE");lines(stat1)
 plot(stat2, ylab = "statistic", main = "MI");lines(stat2)
 plot(kstat1, ylab = "statistic", main = "Kernel");lines(kstat1)
 plot(estat1, ylab = "statistic", main = "Energy");lines(estat1)
 plot(ball1, ylab = "statistic", main = "Ball");lines(ball1)
 plot(rf1, ylab = "statistic", main = "RF");lines(rf1)
+plot(hhg1, ylab = "statistic", main = "HHG sum.chisq");lines(hhg1)
+plot(hhg2, ylab = "statistic", main = "HHG sum.lr");lines(hhg2)
+plot(hhg3, ylab = "statistic", main = "HHG max.chisq");lines(hhg3)
+plot(hhg4, ylab = "statistic", main = "HHG max.lr");lines(hhg4)
 
 # x11()
 # col1 = rep(1:11,each = n)
