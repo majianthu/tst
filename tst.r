@@ -33,36 +33,32 @@ m0 = c(0,0)
 rho = 0.5 # simulation 1
 # rho = 0.0 # simulation 2,3
 v0 = matrix(c(1,rho,rho,1), nrow = 2)
-n = 300 # sample size
-sample0 = rmnorm(n,m0,v0)
-# data = matrix(0,n*11,2)
-# data[1:n,] = sample0
+n0 = 300 # size of sample0
+n1 = 350 # size of sample1
+sample0 = rmnorm(n0,m0,v0)
 stat1 = kstat1 = stat2 = estat1 = ball1 = rf1 = hhg1 = hhg2 = hhg3 = hhg4 = rep(0,10)
 for(i in 1:10){
   # simulation 1
   m1 = m0 + i - 1
-  sample1 = rmnorm(n,m1,v0)
+  sample1 = rmnorm(n1,m1,v0)
   
   # simulation 2
   # rho1 = (i-1) * 0.1
   # v1 = matrix(c(1,rho1,rho1,1),nrow = 2)
-  # sample1 = rmnorm(n,m0,v1)
+  # sample1 = rmnorm(n1,m0,v1)
   
   # simulation 3
   # mv.cop <- mvdc(normalCopula((i-1)*0.1), c("norm", "exp"), list(list(mean = 0, sd =2), list(rate = 0.5)))
-  # sample1 <- rMvdc(n, mv.cop)
-  
-  # data[1:n+i*n,] = sample1
-  
+  # sample1 <- rMvdc(n1, mv.cop)
+
   stat1[i] = tst(sample0,sample1)
   stat2[i] = tst.mi(sample0,sample1)
   kstat1[i] = tst.kernel(sample0,sample1)
-  estat1[i] = eqdist.e( rbind(sample0,sample1), c(n,n) ) # energy statistics based test
+  estat1[i] = eqdist.e( rbind(sample0,sample1), c(n0,n1) ) # energy statistics based test
   ball1[i] = bd.test(sample0,sample1)$statistic # Ball divergence based test
   rf1[i] = hypoRF(as.data.frame(sample0),as.data.frame(sample1))$obs
-  
   Dx = as.matrix(dist((rbind(sample0,sample1)), diag = TRUE, upper = TRUE))
-  y = c(rep(0,n),rep(1,n))
+  y = c(rep(0,n0),rep(1,n1))
   hhg = hhg.test.2.sample(Dx,y, nr.perm = 1000)
   hhg1[i] = hhg$sum.chisq; hhg2[i] = hhg$sum.lr; hhg3[i] = hhg$max.chisq; hhg4[i] = hhg$max.lr
 }#i
@@ -79,8 +75,3 @@ plot(hhg1, ylab = "statistic", main = "HHG sum.chisq");lines(hhg1)
 plot(hhg2, ylab = "statistic", main = "HHG sum.lr");lines(hhg2)
 plot(hhg3, ylab = "statistic", main = "HHG max.chisq");lines(hhg3)
 plot(hhg4, ylab = "statistic", main = "HHG max.lr");lines(hhg4)
-
-# x11()
-# col1 = rep(1:11,each = n)
-# plot(data, xlab = "x1", ylab = "x2", col = col1)
-# legend(x = min(data[,1]),y = max(data[,2]), legend = 0:10,col = 1:11, pch = 1)
