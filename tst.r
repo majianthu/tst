@@ -7,6 +7,7 @@ library(copula)
 library(hypoRF)
 library(HHG)
 library(cramer)
+library(latex2exp)
 
 # mutual information based test
 tst.mi<-function(s0,s1,n = 8){
@@ -32,7 +33,7 @@ tst.kernel<-function(s0,s1){
 
 m0 = c(0,0)
 rho = 0.5 # simulation 1
-# rho = 0.0 # simulation 2,3
+rho = 0.0 # simulation 2,3
 v0 = matrix(c(1,rho,rho,1), nrow = 2)
 n0 = 300 # size of sample0
 n1 = 350 # size of sample1
@@ -40,8 +41,8 @@ sample0 = rmnorm(n0,m0,v0)
 stat1 = kstat1 = stat2 = estat1 = ball1 = rf1 = hhg1 = hhg2 = hhg3 = hhg4 = cramer1 = rep(0,10)
 for(i in 1:10){
   # simulation 1
-  m1 = m0 + i - 1
-  sample1 = rmnorm(n1,m1,v0)
+  # m1 = m0 + i - 1
+  # sample1 = rmnorm(n1,m1,v0)
   
   # simulation 2
   # rho1 = (i-1) * 0.1
@@ -49,8 +50,8 @@ for(i in 1:10){
   # sample1 = rmnorm(n1,m0,v1)
   
   # simulation 3
-  # mv.cop <- mvdc(normalCopula((i-1)*0.1), c("norm", "exp"), list(list(mean = 0, sd =2), list(rate = 0.5)))
-  # sample1 <- rMvdc(n1, mv.cop)
+  mv.cop <- mvdc(normalCopula(0.8), c("norm", "exp"), list(list(mean = 0, sd = 2), list(rate = i)))
+  sample1 <- rMvdc(n1, mv.cop)
 
   stat1[i] = tst(sample0,sample1)
   stat2[i] = tst.mi(sample0,sample1)
@@ -65,17 +66,19 @@ for(i in 1:10){
   cramer1[i] = cramer.test(sample0,sample1)$statistic
 }#i
 
-x11(width = 12, height = 9)
+x11(width = 12, height = 6)
 par(mfrow = c(3,4))
-plot(stat1, ylab = "statistic", main = "CE");lines(stat1)
-plot(stat2, ylab = "statistic", main = "MI");lines(stat2)
-plot(kstat1, ylab = "statistic", main = "Kernel");lines(kstat1)
-plot(estat1, ylab = "statistic", main = "Energy");lines(estat1)
-plot(ball1, ylab = "statistic", main = "Ball");lines(ball1)
-plot(rf1, ylab = "statistic", main = "RF");lines(rf1)
-plot(hhg1, ylab = "statistic", main = "HHG sum.chisq");lines(hhg1)
-plot(cramer1, ylab = "statistic", main = "Cramer");lines(cramer1)
-plot(hhg2, ylab = "statistic", main = "HHG sum.lr");lines(hhg2)
-plot(hhg3, ylab = "statistic", main = "HHG max.chisq");lines(hhg3)
-plot(hhg4, ylab = "statistic", main = "HHG max.lr");lines(hhg4)
-plot(cramer1, ylab = "statistic", main = "Cramer");lines(cramer1)
+# x1 = seq(0,9); xlab1 = TeX(r'($u_1$)') # simulation 1
+# x1 = seq(0,0.9,0.1); xlab1 = TeX(r'($\rho_1$)') # simulation 2
+x1 = 1:10; xlab1 = "rate" # simulation 3
+plot(x1,stat1, xlab = xlab1, ylab = "statistic", main = "CE");lines(x1,stat1)
+plot(x1,stat2, xlab = xlab1, ylab = "statistic", main = "MI");lines(x1,stat2)
+plot(x1,kstat1, xlab = xlab1, ylab = "statistic", main = "Kernel");lines(x1,kstat1)
+plot(x1,estat1, xlab = xlab1, ylab = "statistic", main = "Energy");lines(x1,estat1)
+plot(x1,ball1, xlab = xlab1, ylab = "statistic", main = "Ball");lines(x1,ball1)
+plot(x1,rf1, xlab = xlab1, ylab = "statistic", main = "RF");lines(x1,rf1)
+plot(x1,hhg1, xlab = xlab1, ylab = "statistic", main = "HHG sum.chisq");lines(x1,hhg1)
+plot(x1,hhg2, xlab = xlab1, ylab = "statistic", main = "HHG sum.lr");lines(x1,hhg2)
+plot(x1,hhg3, xlab = xlab1, ylab = "statistic", main = "HHG max.chisq");lines(x1,hhg3)
+plot(x1,hhg4, xlab = xlab1, ylab = "statistic", main = "HHG max.lr");lines(x1,hhg4)
+plot(x1,cramer1, xlab = xlab1, ylab = "statistic", main = "Cramer");lines(x1,cramer1)
