@@ -1,11 +1,12 @@
 library(copent)
 library(twosamples)
+library(latex2exp)
 
 sample0 = matrix( rnorm(300,0,1), 300, 1)
 stat1 = cvm1 = ks1 = kuiper1 = wass1 = dts1 = ad1 = wilcox1 = kruskal1 = 0
 for(i in 1:10){
-  #sample1 = matrix( rnorm(350,(i-1)*0.5,1), 350, 1) # mean
-  sample1 = matrix( rnorm(350, 0, i), 350, 1) # var
+  sample1 = matrix( rnorm(350,(i-1),1), 350, 1) # mean
+  # sample1 = matrix( rnorm(350, 0, i), 350, 1) # var
   stat1[i] = tst(sample0,sample1)
   wilcox1[i] = wilcox.test(sample0,sample1)$statistic
   kruskal1[i] = kruskal.test(c(sample0,sample1),c(rep(1,300),rep(2,350)))$statistic
@@ -18,12 +19,14 @@ for(i in 1:10){
 }
 x11(); 
 par(mfrow=c(3,3))
-plot(stat1, ylab = "statistic", main = "CE"); lines(stat1)
-plot(wilcox1, ylab = "statistic", main = "Wilcoxon"); lines(wilcox1)
-plot(kruskal1, ylab = "statistic", main = "Kruskal-Wallis"); lines(kruskal1)
-plot(cvm1, ylab = "statistic", main = "CVM");lines(cvm1)
-plot(ks1, ylab = "statistic", main = "KS");lines(ks1)
-plot(kuiper1, ylab = "statistic", main = "Kuiper");lines(kuiper1)
-plot(wass1, ylab = "statistic", main = "WASS");lines(wass1)
-plot(dts1, ylab = "statistic", main = "DTS");lines(dts1)
-plot(ad1, ylab = "statistic", main = "AD");lines(ad1)
+x1 = seq(0,9); xlab1 = TeX(r'($u_1$)') # simulation 1
+# x1 = 1:10; xlab1 = TeX(r'($\delta_1$)') # simulation 2
+plot(x1,stat1, xlab = xlab1, ylab = "statistic", main = "CE"); lines(x1,stat1)
+plot(x1,wilcox1, xlab = xlab1, ylab = "statistic", main = "Wilcoxon"); lines(x1,wilcox1)
+plot(x1,kruskal1, xlab = xlab1, ylab = "statistic", main = "Kruskal-Wallis"); lines(x1,kruskal1)
+plot(x1,cvm1, xlab = xlab1, ylab = "statistic", main = "CVM");lines(x1,cvm1)
+plot(x1,ks1, xlab = xlab1, ylab = "statistic", main = "KS");lines(x1,ks1)
+plot(x1,kuiper1, xlab = xlab1, ylab = "statistic", main = "Kuiper");lines(x1,kuiper1)
+plot(x1,wass1, xlab = xlab1, ylab = "statistic", main = "WASS");lines(x1,wass1)
+plot(x1,dts1, xlab = xlab1, ylab = "statistic", main = "DTS");lines(x1,dts1)
+plot(x1,ad1, xlab = xlab1, ylab = "statistic", main = "AD");lines(x1,ad1)
