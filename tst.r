@@ -7,6 +7,8 @@ library(copula)
 library(hypoRF)
 library(HHG)
 library(cramer)
+library(kernlab)
+library(TwoSampleTest.HD)
 library(latex2exp)
 
 # mutual information based test
@@ -22,23 +24,14 @@ tst.mi<-function(s0,s1,n = 8){
   result / n
 }
 
-# kernel-based test
-tst.kernel<-function(s0,s1){
-  dmat <- as.matrix(dist(rbind(s0, s1))) 
-  kmat <- exp(-(dmat^2))                     
-  lab  <- c(rep(1,dim(s0)[1]), rep(2,dim(s1)[1])) 
-  
-  mmd2test(kmat, lab, method = "u")$statistic
-}
-
 m0 = c(0,0)
-rho = 0.5 # simulation 1
+# rho = 0.5 # simulation 1
 rho = 0.0 # simulation 2,3
 v0 = matrix(c(1,rho,rho,1), nrow = 2)
-n0 = 300 # size of sample0
-n1 = 350 # size of sample1
+n0 = 400 # size of sample0
+n1 = 450 # size of sample1
 sample0 = rmnorm(n0,m0,v0)
-stat1 = kstat1 = stat2 = estat1 = ball1 = rf1 = hhg1 = hhg2 = hhg3 = hhg4 = cramer1 = rep(0,10)
+stat1 = kstat1 = stat2 = estat1 = ball1 = rf1 = hhg1 = hhg2 = hhg3 = hhg4 = cramer1 = tsthd1 = rep(0,10)
 for(i in 1:10){
   # simulation 1
   # m1 = m0 + i - 1
@@ -55,7 +48,7 @@ for(i in 1:10){
 
   stat1[i] = tst(sample0,sample1)
   stat2[i] = tst.mi(sample0,sample1)
-  kstat1[i] = tst.kernel(sample0,sample1)
+  kstat1[i] = kmmd(sample0,sample1)@mmdstats[1]
   estat1[i] = eqdist.e( rbind(sample0,sample1), c(n0,n1) ) # energy statistics based test
   ball1[i] = bd.test(sample0,sample1)$statistic # Ball divergence based test
   rf1[i] = hypoRF(as.data.frame(sample0),as.data.frame(sample1))$obs
@@ -64,6 +57,7 @@ for(i in 1:10){
   hhg = hhg.test.2.sample(Dx,y, nr.perm = 1000)
   hhg1[i] = hhg$sum.chisq; hhg2[i] = hhg$sum.lr; hhg3[i] = hhg$max.chisq; hhg4[i] = hhg$max.lr
   cramer1[i] = cramer.test(sample0,sample1)$statistic
+  tsthd1[i] = TwoSampleTest.HD(sample0,sample1)$statistic
 }#i
 
 x11(width = 12, height = 6)
@@ -82,3 +76,6 @@ plot(x1,hhg2, xlab = xlab1, ylab = "statistic", main = "HHG sum.lr");lines(x1,hh
 plot(x1,hhg3, xlab = xlab1, ylab = "statistic", main = "HHG max.chisq");lines(x1,hhg3)
 plot(x1,hhg4, xlab = xlab1, ylab = "statistic", main = "HHG max.lr");lines(x1,hhg4)
 plot(x1,cramer1, xlab = xlab1, ylab = "statistic", main = "Cramer");lines(x1,cramer1)
+plot(x1,tsthd1, xlab = xlab1, ylab = "statistic", main = "TST.HD");lines(x1,tsthd1)
+
+
