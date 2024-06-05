@@ -34,7 +34,7 @@ v0 = matrix(c(1,rho,rho,1), nrow = 2)
 n0 = 400 # size of sample0
 n1 = 450 # size of sample1
 sample0 = rmnorm(n0,m0,v0)
-stat1 = kstat1 = stat2 = estat1 = ball1 = rf1 = hhg1 = hhg2 = hhg3 = hhg4 = cramer1 = tsthd1 = ff1 = peacock1 = dpp1 =rpt1 = rep(0,10)
+stat1 = kstat1 = stat2 = estat1 = ball1 = rf1 = hhg1 = hhg2 = hhg3 = hhg4 = cramer1 = tsthd1 = ff1 = peacock1 = dpp1 = rpt1 = rep(0,10)
 for(i in 1:10){
   # simulation 1
   # m1 = m0 + i - 1
