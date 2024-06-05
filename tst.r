@@ -11,6 +11,7 @@ library(TwoSampleTest.HD)
 library(fasano.franceschini.test)
 library(Peacock.test)
 library(diproperm)
+library(RandomProjectionTest)
 library(latex2exp)
 
 # mutual information based test
@@ -33,7 +34,7 @@ v0 = matrix(c(1,rho,rho,1), nrow = 2)
 n0 = 400 # size of sample0
 n1 = 450 # size of sample1
 sample0 = rmnorm(n0,m0,v0)
-stat1 = kstat1 = stat2 = estat1 = ball1 = rf1 = hhg1 = hhg2 = hhg3 = hhg4 = cramer1 = tsthd1 = ff1 = peacock1 = dpp1 = rep(0,10)
+stat1 = kstat1 = stat2 = estat1 = ball1 = rf1 = hhg1 = hhg2 = hhg3 = hhg4 = cramer1 = tsthd1 = ff1 = peacock1 = dpp1 =rpt1 = rep(0,10)
 for(i in 1:10){
   # simulation 1
   # m1 = m0 + i - 1
@@ -63,10 +64,11 @@ for(i in 1:10){
   ff1[i] = fasano.franceschini.test(sample0,sample1)$statistic
   peacock1[i] = peacock2(sample0,sample1)
   dpp1[i] = DiProPerm(rbind(sample0,sample1),c(rep(-1,n0),rep(1,n1)))$obs_teststat
+  rpt1[i] = random_projection_test(sample0,sample1)$statistic
 }#i
 
 x11(width = 12, height = 6)
-par(mfrow = c(3,5))
+par(mfrow = c(3,6))
 # x1 = seq(0,9); xlab1 = TeX(r'($u_1$)') # simulation 1
 x1 = seq(0,0.9,0.1); xlab1 = TeX(r'($\rho_1$)') # simulation 2
 # x1 = 1:10; xlab1 = "rate" # simulation 3
@@ -85,3 +87,4 @@ plot(x1,tsthd1, xlab = xlab1, ylab = "statistic", main = "TST.HD");lines(x1,tsth
 plot(x1,ff1, xlab = xlab1, ylab = "statistic", main = "F-F");lines(x1,ff1)
 plot(x1,peacock1, xlab = xlab1, ylab = "statistic", main = "Peacock");lines(x1,peacock1)
 plot(x1,dpp1, xlab = xlab1, ylab = "statistic", main = "DiProPerm");lines(x1,dpp1)
+plot(x1,rpt1, xlab = xlab1, ylab = "statistic", main = "RPT");lines(x1,rpt1)
