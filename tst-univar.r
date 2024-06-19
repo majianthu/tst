@@ -6,8 +6,9 @@ library(latex2exp)
 sample0 = matrix( rnorm(300,0,1), 300, 1)
 stat1 = cvm1 = ks1 = kuiper1 = wass1 = dts1 = ad1 = wilcox1 = kruskal1 = wilcox2 = vartest1 = 0
 for(i in 1:10){
-  # sample1 = matrix( rnorm(350,(i-1),1), 350, 1) # mean
-  sample1 = matrix( rnorm(350, 0, i), 350, 1) # var
+  # sample1 = matrix( rnorm(350,(i-1),1), 350, 1) # simulation1 : mean
+  sample1 = matrix( rnorm(350, 0, i), 350, 1) # simulation 2 : var
+  
   stat1[i] = tst(sample0,sample1)
   wilcox1[i] = wilcox.test(sample0,sample1)$statistic
   kruskal1[i] = kruskal.test(c(sample0,sample1),c(rep(1,300),rep(2,350)))$statistic
