@@ -20,8 +20,7 @@ for(i in 1:10){
   #wilcox2[i] = wilcoxtest(sample0,sample1)$statistic # simulation 1
   vartest1[i] = vartest(sample0,sample1)$statistic # simulation 2
 }
-# x11(width = 12, height = 8); 
-pdf(file = "~/Rworks/twosample/sim-tst-uni2.pdf", width = 12, height = 8)
+x11(width = 12, height = 8); 
 par(mfrow=c(3,4))
 # x1 = seq(0,9); xlab1 = TeX(r'($u_1$)') # simulation 1
 x1 = 1:10; xlab1 = TeX(r'($\delta_1$)') # simulation 2
@@ -36,4 +35,3 @@ plot(x1,dts1, xlab = xlab1, ylab = "statistic", main = "DTS");lines(x1,dts1)
 plot(x1,ad1, xlab = xlab1, ylab = "statistic", main = "AD");lines(x1,ad1)
 #plot(x1,wilcox2, xlab = xlab1, ylab = "statistic", main = "Wilcoxon2"); lines(x1,wilcox2) # simulation 1
 plot(x1,vartest1, xlab = xlab1, ylab = "statistic", main = "Vartest"); lines(x1,vartest1) # simulation 2
-dev.off()
