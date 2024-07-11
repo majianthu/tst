@@ -12,6 +12,9 @@ library(fasano.franceschini.test)
 library(Peacock.test)
 library(diproperm)
 library(RandomProjectionTest)
+library(DepthProc)
+library(kSamples)
+library(lawstat)
 library(latex2exp)
 
 # mutual information based test
@@ -29,21 +32,22 @@ tst.mi<-function(s0,s1,n = 8){
 
 m0 = c(0,0)
 rho = 0.5 # simulation 1
-rho = 0.0 # simulation 2,3
+# rho = 0.0 # simulation 2,3
 v0 = matrix(c(1,rho,rho,1), nrow = 2)
 n0 = 400 # size of sample0
 n1 = 450 # size of sample1
 sample0 = rmnorm(n0,m0,v0)
 stat1 = kstat1 = stat2 = estat1 = ball1 = rf1 = hhg1 = hhg2 = hhg3 = hhg4 = cramer1 = tsthd1 = ff1 = peacock1 = dpp1 = rpt1 = rep(0,10)
+depth1 = ad1 = qn1 = bm1 = rep(0,10)
 for(i in 1:10){
   # simulation 1
-  # m1 = m0 + i - 1
-  # sample1 = rmnorm(n1,m1,v0)
+  m1 = m0 + i - 1
+  sample1 = rmnorm(n1,m1,v0)
   
   # simulation 2
-  rho1 = (i-1) * 0.1
-  v1 = matrix(c(1,rho1,rho1,1),nrow = 2)
-  sample1 = rmnorm(n1,m0,v1)
+  # rho1 = (i-1) * 0.1
+  # v1 = matrix(c(1,rho1,rho1,1),nrow = 2)
+  # sample1 = rmnorm(n1,m0,v1)
   
   # simulation 3
   # mv.cop <- mvdc(normalCopula(0.8), c("norm", "exp"), list(list(mean = 0, sd = 2), list(rate = i)))
@@ -65,12 +69,16 @@ for(i in 1:10){
   peacock1[i] = peacock2(sample0,sample1)
   dpp1[i] = DiProPerm(rbind(sample0,sample1),c(rep(-1,n0),rep(1,n1)))$obs_teststat
   rpt1[i] = random_projection_test(sample0,sample1)$statistic
+  depth1[i] = mWilcoxonTest(sample0,sample1)$statistic
+  ad1[i] = ad.test(sample0,sample1)$ad[1,1]
+  qn1[i] = qn.test(sample0,sample1)$qn[1]
+  bm1[i] = brunner.munzel.test(sample0,sample1)$statistic
 }#i
 
-x11(width = 12, height = 6)
-par(mfrow = c(3,6))
-# x1 = seq(0,9); xlab1 = TeX(r'($u_1$)') # simulation 1
-x1 = seq(0,0.9,0.1); xlab1 = TeX(r'($\rho_1$)') # simulation 2
+x11(width = 8, height = 12)
+par(mfrow = c(5,4))
+x1 = seq(0,9); xlab1 = TeX(r'($u_1$)') # simulation 1
+# x1 = seq(0,0.9,0.1); xlab1 = TeX(r'($\rho_1$)') # simulation 2
 # x1 = 1:10; xlab1 = "rate" # simulation 3
 plot(x1,stat1, xlab = xlab1, ylab = "statistic", main = "CE");lines(x1,stat1)
 plot(x1,stat2, xlab = xlab1, ylab = "statistic", main = "MI");lines(x1,stat2)
@@ -88,3 +96,7 @@ plot(x1,ff1, xlab = xlab1, ylab = "statistic", main = "F-F");lines(x1,ff1)
 plot(x1,peacock1, xlab = xlab1, ylab = "statistic", main = "Peacock");lines(x1,peacock1)
 plot(x1,dpp1, xlab = xlab1, ylab = "statistic", main = "DiProPerm");lines(x1,dpp1)
 plot(x1,rpt1, xlab = xlab1, ylab = "statistic", main = "RPT");lines(x1,rpt1)
+plot(x1,depth1, xlab = xlab1, ylab = "statistic", main = "Depth");lines(x1,depth1)
+plot(x1,ad1, xlab = xlab1, ylab = "statistic", main = "AD");lines(x1,ad1)
+plot(x1,qn1, xlab = xlab1, ylab = "statistic", main = "QN");lines(x1,qn1)
+plot(x1,bm1, xlab = xlab1, ylab = "statistic", main = "BM");lines(x1,bm1)
